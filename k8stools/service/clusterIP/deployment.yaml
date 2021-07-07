@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-ui
+  labels:
+    app: nginx-ui
+spec:
+  type: ClusterIP
+  ports:          
+  - port: 80
+    name: http
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: nginx-ui
+---
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: nginx-ui
+spec:
+  selector:
+    matchLabels:
+      app: nginx-ui
+  replicas: 2 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: nginx-ui
+    spec:
+      containers:
+      - name: nginx-ui
+        image: nginxdemos/hello
+        ports:
+        - containerPort: 80
+

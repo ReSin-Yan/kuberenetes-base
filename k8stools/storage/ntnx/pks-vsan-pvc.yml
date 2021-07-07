@@ -1,0 +1,12 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: default-pvc
+  annotations:
+    volume.beta.kubernetes.io/storage-class: default-storageclass
+spec:
+  accessModes:
+    - ReadOnlyMany     
+  resources:
+    requests:
+      storage: 2Gi
