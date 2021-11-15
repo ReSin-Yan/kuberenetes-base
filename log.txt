@@ -1,0 +1,74 @@
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install vim build-essential curl git ssh net-tools 
+ifconfig 
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+sudo usermod -aG docker ubuntu
+
+
+sudo swapoff -a
+sudo sed -i.bak '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+sudo apt-get update && sudo apt-get install -y apt-transport-https
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo  apt-key add -
+echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" >> kubernetes.list
+sudo cp kubernetes.list /etc/apt/sources.list.d/
+rm kubernetes.list
+sudo chmod 644 /etc/apt/sources.list.d/kubernetes.list
+sudo apt-get update
+sudo apt-get install -y kubelet=1.21.0-00  kubeadm=1.21.0-00 kubectl=1.21.0-00
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+
+wget https://tw.download.nvidia.com/tesla/470.57.02/NVIDIA-Linux-x86_64-470.57.02.run
+kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+kubectl taint nodes --all node-role.kubernetes.io/master-
+lsmod | grep -i nouveau
+sudo bash -c "echo blacklist nouveau > /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
+sudo bash -c "echo options nouveau modeset=0 >> /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
+sudo update-initramfs -u
+sudo reboot 
+
+
+sudo apt install -y gcc make cmake linux-headers-$(uname -r)
+sudo sh NVIDIA-Linux-x86_64-470.57.02.run
+nvidia-smi 
+
+
+distribution=$(. /etc/os-release;echo $ID$VERSION_ID)    && curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -    && curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+sudo apt-get update    && sudo apt-get install -y nvidia-docker2
+sudo vim /etc/docker/daemon.json 
+{
+   "default-runtime": "nvidia",
+   "runtimes": {
+      "nvidia": {
+            "path": "/usr/bin/nvidia-container-runtime",
+            "runtimeArgs": []
+      }
+   }
+}
+sudo systemctl restart docker
+sudo docker run --rm --gpus all nvidia/cuda:11.0-base nvidia-smi
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3    && chmod 700 get_helm.sh    && ./get_helm.sh
+helm repo add nvdp https://nvidia.github.io/k8s-device-plugin    && helm repo update
+helm install --generate-name nvdp/nvidia-device-plugin
+kubectl get pods -A
+
+
+vim test.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gpu-operator-test
+spec:
+  restartPolicy: OnFailure
+  containers:
+  - name: cuda-vector-add
+    image: "nvidia/samples:vectoradd-cuda10.2"
+    resources:
+      limits:
+         nvidia.com/gpu: 1
+kubectl apply -f test.yaml 
