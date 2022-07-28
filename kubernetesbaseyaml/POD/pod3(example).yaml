@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx2
+  labels:
+    env: test
+spec:
+  containers:
+  - name: nginx
+    image: harbor.zeronetanzu.lab/k8scourse/nginx:v1
+    ports:
+    - containerPort: 80
