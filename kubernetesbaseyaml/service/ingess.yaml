@@ -1,55 +1,52 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-ui
   labels:
-    app: nginx-ui
+    app: kuard
+  name: kuard
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
-      app: nginx-ui
+      app: kuard
   template:
     metadata:
       labels:
-        app: nginx-ui
+        app: kuard
     spec:
       containers:
-      - name: nginx-ui
-        image: nginxdemos/hello
-        ports:
-        - containerPort: 80
-          protocol: TCP
-        name: http
+      - image: gcr.io/kuar-demo/kuard-amd64:1
+        name: kuard
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: nginx-ui
   labels:
-    app: nginx-ui
+    app: kuard
+  name: kuard
 spec:
   ports:
   - port: 80
-    name: http
-    targetPort: 80
+    protocol: TCP
+    targetPort: 8080
   selector:
-    app: nginx-ui
+    app: kuard
+  sessionAffinity: None
   type: ClusterIP
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: nginx-ui-ingress
+  name: kuard-ingress
 spec:
   rules:
-  - host: nginx-ui.zodemo.com
+  - host: kuard.demo.com
     http:
       paths:
       - pathType: Prefix
         path: /
         backend:
           service:
-            name: nginx
+            name: kuard
             port:
               number: 80
