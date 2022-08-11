@@ -2,7 +2,7 @@ Last update: 2022/8/10
 # 基礎常用套件簡述    
 
 
-## H
+## Helm
 Helm 是一個 Kubernetes 應用管理工具，用來管理 chart—(預先配置好的安裝資源列表)，有點類似於 Ubuntu 的 APT 和 CentOS 中的 YUM。  
 
 Helm chart 是用來打包Kubernetes原生應用程序的 YAML 文件，可以在你部署應用的時候自定義應用程序的一些參數。  
