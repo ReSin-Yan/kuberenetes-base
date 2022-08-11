@@ -1,62 +1,55 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: filebrowser-app
+  name: nginx-ui
   labels:
-    app: filebrowser
+    app: nginx-ui
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: filebrowser
+      app: nginx-ui
   template:
     metadata:
       labels:
-        app: filebrowser
+        app: nginx-ui
     spec:
       containers:
-      - name: filebrowser
-        image: taipower-harbor.zerone.lab/taipower/filebrowser:latest
+      - name: nginx-ui
+        image: nginxdemos/hello
         ports:
-        - containerPort: 8080
+        - containerPort: 80
           protocol: TCP
         name: http
-        volumeMounts:
-        - mountPath: /data
-          name: data1
-      volumes:
-      - name: data1
-        persistentVolumeClaim:
-          claimName: demo-pvc
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: filebrowser
+  name: nginx-ui
   labels:
-    app: filebrowser
+    app: nginx-ui
 spec:
   ports:
   - port: 80
     name: http
-    targetPort: 8080
+    targetPort: 80
   selector:
-    app: filebrowser
+    app: nginx-ui
   type: ClusterIP
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: filebrowser-ingress
+  name: nginx-ui-ingress
 spec:
   rules:
-  - host: filebrowser.taipower.zerone.lab
+  - host: nginx-ui.zodemo.com
     http:
       paths:
       - pathType: Prefix
         path: /
         backend:
           service:
-            name: filebrowser
+            name: nginx
             port:
               number: 80
