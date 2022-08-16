@@ -47,7 +47,7 @@ kubectl get rs
 接著再往下看 Pod 的細節：  
 deployment controller 同時也幫 pod 增加了一個 "pod-template-hash" label，hash value 也是相同的
 ```
-$ kubectl get pod --show-labels
+kubectl get pod --show-labels
 ```
 
 
