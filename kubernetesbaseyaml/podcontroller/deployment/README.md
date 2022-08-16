@@ -7,7 +7,7 @@ Deployment 為 pod & replicaset 提供了一個宣告式的設定 & 更新方式
 下面是 deployment 的架構圖。  
 ![img](https://godleon.github.io/blog/images/kubernetes/k8s-deployment.png)   
 
-#### 建立 Deployment  
+### 建立 Deployment  
 
 透過 "--record" 參數來保留後續的 revision history
 ```
@@ -24,12 +24,12 @@ $ kubectl get deployment
 NAME               DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
 nginx-deployment   3         3         3            0           15s
 ```
-**NAME： 列出了在目前 namespace 中的 deployment 清單  
-DESIRED： 使用者所宣告的 desired status  
-CURRENT： 表示目前有多少個 pod 副本在運行  
-UP-TO-DATE： 表示目前有多個個 pod 副本已經達到 desired status  
-AVAILABLE： 表示目前有多個 pod 副本已經可以開始提供服務  
-AGE： 顯示目前 pod 運行的時間**  
+- NAME： 列出了在目前 namespace 中的 deployment 清單  
+- DESIRED： 使用者所宣告的 desired status  
+- CURRENT： 表示目前有多少個 pod 副本在運行  
+- UP-TO-DATE： 表示目前有多個個 pod 副本已經達到 desired status  
+- AVAILABLE： 表示目前有多個 pod 副本已經可以開始提供服務  
+- AGE： 顯示目前 pod 運行的時間  
 
 
 如果要即時監控 deployment 佈署的狀況，可以使用以下指令：  
@@ -66,3 +66,11 @@ nginx-deployment-67594d6bf6-22nrx   1/1       Running   0          12s       app
 nginx-deployment-67594d6bf6-ccx87   1/1       Running   0          12s       app=nginx,pod-template-hash=2315082692
 nginx-deployment-67594d6bf6-rkztl   1/1       Running   0          12s       app=nginx,pod-template-hash=2315082692
 ```
+
+##### Pod-Template-Hash Label  
+
+關於 pod-template-hash label，有幾點：
+
+- 是由 deployment controller 加到每個 replicaset 的，主要是透過將 template 拿來計算 hash value 的方式來確保每個 replicaset 中的 template 定義不會有重複，
+- pod-template-hash label 同時會被 deployment controller 加到 replicaset & pod 中，利用此 hash value 就可以確認那些 deploymen/replicaset/pod 是屬於同一組
+- replicaset 名稱的 hash value 跟 pod-template-hash 不一樣，但應該是不同的 hash 方法所導致(因為透過相同的 YAML 檔案重新建立 deployment 也還是會得到相同的結果)
