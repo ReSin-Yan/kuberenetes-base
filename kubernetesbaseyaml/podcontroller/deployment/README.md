@@ -95,7 +95,7 @@ kubectl describe rs/nginx-deployment-xxxxx
 ```
 
 ```
-$ kubectl get pod --show-labels
+kubectl get pod --show-labels
 ```
 
 
@@ -107,3 +107,43 @@ $ kubectl get pod --show-labels
 
 ### Deployment 版本回溯  
 
+在預設情況下，系統中會包含 Deployment rollout 的歷史資訊(也就是 .spec.template 有變動時)  
+因此使用者可以在 在 revision history limit 的範圍內，回復到任何一個時間點的狀態。  
+> 由於只有當 .spec.template 變更時才會有 revision 記錄，因此改變 replica 數量就不會產生新的 revision 記錄  
+ 
+將 container image 從 nginx:1.9.1 更新為 nginx:1.91  
+```
+kubectl set image deployment/nginx-deployment nginx=nginx:1.91
+```
+
+pod 則是明確的顯示遇到 image pull 的問題，時間一久就會開始進入 back off 的狀態  
+```
+kubectl get pod  
+``` 
+
+透過 rollout history 指令可以看出曾經下過什麼指令  
+```
+kubectl rollout history deployment/nginx-deployment
+``` 
+
+檢視 rollout hsitory 的細節  
+```
+kubectl rollout history deployment/nginx-deployment --revision=2
+```
+
+指令效果相同於 "kubectl rollout undo deployment/nginx-deployment --to-revision=2"  
+```
+kubectl rollout undo deployment/nginx-deployment  
+```
+
+### Scale out/in Deployment  
+
+設定目前的 pod repplica 為 10  
+```
+kubectl scale deployment/nginx-deployment --replicas=10
+``` 
+
+設定目前的 pod repplica 為 3 
+```
+kubectl scale deployment/nginx-deployment --replicas=3
+``` 
