@@ -19,11 +19,15 @@ $ kubectl apply -f nginx-deployment.yaml --record
 $ kubectl get deployment
 NAME               DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
 nginx-deployment   3         3         3            0           15s
+```
+NAME： 列出了在目前 namespace 中的 deployment 清單  
+DESIRED： 使用者所宣告的 desired status  
+CURRENT： 表示目前有多少個 pod 副本在運行  
+UP-TO-DATE： 表示目前有多個個 pod 副本已經達到 desired status  
+AVAILABLE： 表示目前有多個 pod 副本已經可以開始提供服務  
+AGE： 顯示目前 pod 運行的時間  
 
-# NAME： 列出了在目前 namespace 中的 deployment 清單
-# DESIRED： 使用者所宣告的 desired status
-# CURRENT： 表示目前有多少個 pod 副本在運行
-# UP-TO-DATE： 表示目前有多個個 pod 副本已經達到 desired status
-# AVAILABLE： 表示目前有多個 pod 副本已經可以開始提供服務
-# AGE： 顯示目前 pod 運行的時間
+如果要即時監控 deployment 佈署的狀況，可以使用以下指令：  
+```
+kubectl rollout status deployment/nginx-deployment
 ```
