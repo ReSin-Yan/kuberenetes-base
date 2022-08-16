@@ -11,12 +11,12 @@ Deployment 為 pod & replicaset 提供了一個宣告式的設定 & 更新方式
 
 透過 "--record" 參數來保留後續的 revision history
 ```
-$ kubectl apply -f nginx-deployment.yaml --record
+kubectl apply -f nginx-deployment.yaml --record
 ```
 
 接著透過 kubectl 來查詢剛剛佈署的 deployment 相關資訊：  
 ```
-$ kubectl get deployment
+kubectl get deployment
 ```
 
 - NAME： 列出了在目前 namespace 中的 deployment 清單  
