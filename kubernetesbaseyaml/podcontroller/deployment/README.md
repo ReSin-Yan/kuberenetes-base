@@ -17,6 +17,7 @@ $ kubectl apply -f nginx-deployment.yaml --record
 接著透過 kubectl 來查詢剛剛佈署的 deployment 相關資訊：  
 ```
 $ kubectl get deployment
+
 NAME               DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
 nginx-deployment   3         3         3            0           15s
 ```
@@ -27,7 +28,18 @@ UP-TO-DATE： 表示目前有多個個 pod 副本已經達到 desired status
 AVAILABLE： 表示目前有多個 pod 副本已經可以開始提供服務  
 AGE： 顯示目前 pod 運行的時間  
 
+
 如果要即時監控 deployment 佈署的狀況，可以使用以下指令：  
 ```
 kubectl rollout status deployment/nginx-deployment
+deployment "nginx-deployment" successfully rolled out
 ```
+
+接著繼續往下看關於 ReplicaSet 的細節：  
+```
+kubectl get rs  
+
+NAME                          DESIRED   CURRENT   READY     AGE
+nginx-deployment-67594d6bf6   3         3         3         9m
+```
+
