@@ -71,3 +71,39 @@ $ kubectl get pod --show-labels
 ```
 kubectl set image deployment/nginx-deployment nginx=nginx:1.9.1 --record
 ```
+
+檢視 rollout status  
+```
+kubectl rollout status deployment/nginx-deployment
+```
+
+> 也可以透過 kubectl edit deployment/nginx-deployment 指令直接對 YAML 檔案進行修改。
+
+透過修改 replica 數量不會讓 pod-template-hash 有變動  
+但是修改 template 的內容就會造成 pod-template-hash 的變動了  
+由於上方已經變更了 container image version  
+因此來檢查一下目前 replicaset & pod 的狀態資訊：  
+
+檢視 replicaset 的狀態  
+可以發現 pod-template-hash 已經變換
+```
+kubectl get rs
+```
+
+```
+kubectl describe rs/nginx-deployment-xxxxx
+```
+
+```
+$ kubectl get pod --show-labels
+```
+
+
+以上狀況是在原本的 deployment 已經完成佈署的狀態下，變更 template 後會發生的行為，那如下發生以下狀況：  
+
+> 佈署 5 個副本 + nginx:1.7.9 的 deployment，但當只有 3 個 pod 佈署完成時，馬上將 template 中的 container image version 修改為 nginx:1.9.1  
+
+以上面的例子來說，k8s 就不會遵守原本的更新規則，而是會直接砍掉原本的 3 個 pod，然後開始建立新版本的 5 個 pod。  
+
+### Deployment 版本回溯  
+
